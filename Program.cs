@@ -1,6 +1,6 @@
 ﻿using Solution.Common;
-using Solution.Domain.Equipment;
-using Solution.Domain.Users;
+using Solution.ConsoleUI;
+using Solution.Persistence;
 using Solution.Services;
 
 namespace Solution;
@@ -20,82 +20,68 @@ public class Program
             rentalRulesService,
             penaltyPolicy,
             idGenerator);
+        var reportService = new ReportService(
+            equipmentService,
+            userService,
+            rentalService);
+        var jsonStorageService = new JsonStorageService();
 
-        var student = new Student(
-            idGenerator.GenerateUserId(),
-            "Adrian",
-            "Nowacki");
+        var consoleMenu = new ConsoleMenu(
+            idGenerator,
+            equipmentService,
+            userService,
+            rentalService,
+            reportService,
+            jsonStorageService);
 
-        var employee = new Employee(
-            idGenerator.GenerateUserId(),
-            "Jan",
-            "Kowalski");
+        var demoScenarioRunner = new DemoScenarioRunner(
+            idGenerator,
+            equipmentService,
+            userService,
+            rentalService,
+            reportService);
 
-        userService.AddUser(student);
-        userService.AddUser(employee);
+        RunStartupMenu(consoleMenu, demoScenarioRunner);
+    }
 
-        var laptop = new Laptop(
-            idGenerator.GenerateEquipmentId(),
-            "Dell Latitude 5440",
-            16,
-            "Windows 11");
-
-        var projector = new Projector(
-            idGenerator.GenerateEquipmentId(),
-            "Epson EB-FH52",
-            4000,
-            "1920x1080");
-
-        var camera = new Camera(
-            idGenerator.GenerateEquipmentId(),
-            "Canon EOS R10",
-            24,
-            "Zoom");
-
-        equipmentService.AddEquipment(laptop);
-        equipmentService.AddEquipment(projector);
-        equipmentService.AddEquipment(camera);
-
-        Console.WriteLine("=== Correct rental ===");
-        Console.WriteLine(rentalService.RentEquipment(student.Id, laptop.Id, 7).Message);
-
-        Console.WriteLine();
-        Console.WriteLine("=== Second correct rental ===");
-        Console.WriteLine(rentalService.RentEquipment(student.Id, projector.Id, 5).Message);
-
-        Console.WriteLine();
-        Console.WriteLine("=== Invalid rental: student exceeds limit ===");
-        Console.WriteLine(rentalService.RentEquipment(student.Id, camera.Id, 3).Message);
-
-        Console.WriteLine();
-        Console.WriteLine("=== Active rentals for selected user ===");
-        foreach (var rental in rentalService.GetActiveRentalsByUser(student.Id))
+    private static void RunStartupMenu(ConsoleMenu consoleMenu, DemoScenarioRunner demoScenarioRunner)
+    {
+        while (true)
         {
-            Console.WriteLine(rental);
+            Console.Clear();
+            Console.WriteLine("=== University Equipment Rental Service ===");
+            Console.WriteLine("1. Run demo scenario");
+            Console.WriteLine("2. Run interactive menu");
+            Console.WriteLine("0. Exit");
+            Console.WriteLine();
+            Console.Write("Choose an option: ");
+
+            var choice = Console.ReadLine()?.Trim();
+
+            switch (choice)
+            {
+                case "1":
+                    demoScenarioRunner.Run();
+                    WaitForEnter();
+                    return;
+                case "2":
+                    consoleMenu.Run();
+                    return;
+                case "0":
+                    Console.WriteLine("Exiting application.");
+                    return;
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    WaitForEnter();
+                    break;
+            }
         }
+    }
 
+    private static void WaitForEnter()
+    {
         Console.WriteLine();
-        Console.WriteLine("=== Return on time ===");
-        var onTimeReturnDate = DateTime.Now.AddDays(5);
-        Console.WriteLine(rentalService.ReturnEquipment(projector.Id, onTimeReturnDate).Message);
-
-        Console.WriteLine();
-        Console.WriteLine("=== Return late with penalty ===");
-        var lateReturnDate = DateTime.Now.AddDays(10);
-        Console.WriteLine(rentalService.ReturnEquipment(laptop.Id, lateReturnDate).Message);
-
-        Console.WriteLine();
-        Console.WriteLine("=== Overdue rentals ===");
-        foreach (var rental in rentalService.GetOverdueRentals())
-        {
-            Console.WriteLine(rental);
-        }
-
-        Console.WriteLine();
-        Console.WriteLine("=== All rentals ===");
-        foreach (var rental in rentalService.GetAllRentals())
-        {
-            Console.WriteLine(rental);
-        }
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
     }
 }

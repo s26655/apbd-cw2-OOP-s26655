@@ -28,11 +28,16 @@ public class Rental
 
     public bool IsReturned => ReturnedAt.HasValue;
     public bool IsOverdue => !IsReturned && DateTime.Now > DueDate;
-    public bool WasReturnedOnTime => IsReturned && ReturnedAt.Value <= DueDate;
-
+    public bool WasReturnedOnTime => ReturnedAt is DateTime returnedAt && returnedAt <= DueDate;
     public void Return(DateTime returnDate, decimal penalty)
     {
         ReturnedAt = returnDate;
+        Penalty = penalty;
+    }
+
+    public void RestoreReturnState(DateTime? returnedAt, decimal penalty)
+    {
+        ReturnedAt = returnedAt;
         Penalty = penalty;
     }
 
