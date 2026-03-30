@@ -12,6 +12,14 @@ public class Program
         var idGenerator = new IdGenerator();
         var equipmentService = new EquipmentService();
         var userService = new UserService();
+        var rentalRulesService = new RentalRulesService();
+        var penaltyPolicy = new PenaltyPolicy();
+        var rentalService = new RentalService(
+            equipmentService,
+            userService,
+            rentalRulesService,
+            penaltyPolicy,
+            idGenerator);
 
         var student = new Student(
             idGenerator.GenerateUserId(),
@@ -22,6 +30,9 @@ public class Program
             idGenerator.GenerateUserId(),
             "Jan",
             "Kowalski");
+
+        userService.AddUser(student);
+        userService.AddUser(employee);
 
         var laptop = new Laptop(
             idGenerator.GenerateEquipmentId(),
@@ -41,32 +52,50 @@ public class Program
             24,
             "Zoom");
 
-        Console.WriteLine(userService.AddUser(student).Message);
-        Console.WriteLine(userService.AddUser(employee).Message);
+        equipmentService.AddEquipment(laptop);
+        equipmentService.AddEquipment(projector);
+        equipmentService.AddEquipment(camera);
 
-        Console.WriteLine(equipmentService.AddEquipment(laptop).Message);
-        Console.WriteLine(equipmentService.AddEquipment(projector).Message);
-        Console.WriteLine(equipmentService.AddEquipment(camera).Message);
+        Console.WriteLine("=== Correct rental ===");
+        Console.WriteLine(rentalService.RentEquipment(student.Id, laptop.Id, 7).Message);
 
         Console.WriteLine();
-        Console.WriteLine("All users:");
-        foreach (var user in userService.GetAllUsers())
+        Console.WriteLine("=== Second correct rental ===");
+        Console.WriteLine(rentalService.RentEquipment(student.Id, projector.Id, 5).Message);
+
+        Console.WriteLine();
+        Console.WriteLine("=== Invalid rental: student exceeds limit ===");
+        Console.WriteLine(rentalService.RentEquipment(student.Id, camera.Id, 3).Message);
+
+        Console.WriteLine();
+        Console.WriteLine("=== Active rentals for selected user ===");
+        foreach (var rental in rentalService.GetActiveRentalsByUser(student.Id))
         {
-            Console.WriteLine(user);
+            Console.WriteLine(rental);
         }
 
         Console.WriteLine();
-        Console.WriteLine("All equipment:");
-        foreach (var equipment in equipmentService.GetAllEquipment())
+        Console.WriteLine("=== Return on time ===");
+        var onTimeReturnDate = DateTime.Now.AddDays(5);
+        Console.WriteLine(rentalService.ReturnEquipment(projector.Id, onTimeReturnDate).Message);
+
+        Console.WriteLine();
+        Console.WriteLine("=== Return late with penalty ===");
+        var lateReturnDate = DateTime.Now.AddDays(10);
+        Console.WriteLine(rentalService.ReturnEquipment(laptop.Id, lateReturnDate).Message);
+
+        Console.WriteLine();
+        Console.WriteLine("=== Overdue rentals ===");
+        foreach (var rental in rentalService.GetOverdueRentals())
         {
-            Console.WriteLine(equipment);
+            Console.WriteLine(rental);
         }
 
         Console.WriteLine();
-        Console.WriteLine("Available equipment:");
-        foreach (var equipment in equipmentService.GetAvailableEquipment())
+        Console.WriteLine("=== All rentals ===");
+        foreach (var rental in rentalService.GetAllRentals())
         {
-            Console.WriteLine(equipment);
+            Console.WriteLine(rental);
         }
     }
 }
