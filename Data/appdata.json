@@ -1,0 +1,80 @@
+{
+  "EquipmentItems": [
+    {
+      "EquipmentType": "Laptop",
+      "Id": "EQ-001",
+      "Name": "Dell Latitude 5440",
+      "IsAvailable": true,
+      "IsMarkedUnavailable": false,
+      "UnavailableReason": "",
+      "RamGb": 16,
+      "OperatingSystem": "Windows 11",
+      "Lumens": null,
+      "Resolution": null,
+      "Megapixels": null,
+      "LensType": null
+    },
+    {
+      "EquipmentType": "Projector",
+      "Id": "EQ-002",
+      "Name": "Epson EB-FH52",
+      "IsAvailable": true,
+      "IsMarkedUnavailable": false,
+      "UnavailableReason": "",
+      "RamGb": null,
+      "OperatingSystem": null,
+      "Lumens": 4000,
+      "Resolution": "1920x1080",
+      "Megapixels": null,
+      "LensType": null
+    },
+    {
+      "EquipmentType": "Camera",
+      "Id": "EQ-003",
+      "Name": "Canon EOS R10",
+      "IsAvailable": false,
+      "IsMarkedUnavailable": true,
+      "UnavailableReason": "Damaged lens",
+      "RamGb": null,
+      "OperatingSystem": null,
+      "Lumens": null,
+      "Resolution": null,
+      "Megapixels": 24,
+      "LensType": "Zoom"
+    }
+  ],
+  "Users": [
+    {
+      "UserType": "Student",
+      "Id": "USR-001",
+      "FirstName": "Adrian",
+      "LastName": "Nowacki"
+    },
+    {
+      "UserType": "Employee",
+      "Id": "USR-002",
+      "FirstName": "Jan",
+      "LastName": "Kowalski"
+    }
+  ],
+  "Rentals": [
+    {
+      "Id": "RNT-001",
+      "UserId": "USR-001",
+      "EquipmentId": "EQ-001",
+      "RentalDate": "2026-03-30T20:47:36.329799+02:00",
+      "DueDate": "2026-04-06T20:47:36.337906+02:00",
+      "ReturnedAt": "2026-04-09T20:47:36.338619+02:00",
+      "Penalty": 30
+    },
+    {
+      "Id": "RNT-002",
+      "UserId": "USR-001",
+      "EquipmentId": "EQ-002",
+      "RentalDate": "2026-03-30T20:47:36.33815+02:00",
+      "DueDate": "2026-04-04T20:47:36.338151+02:00",
+      "ReturnedAt": "2026-04-04T20:47:36.338152+02:00",
+      "Penalty": 0
+    }
+  ]
+}

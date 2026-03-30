@@ -121,4 +121,10 @@ public class RentalService
             .ToList()
             .AsReadOnly();
     }
+
+    public void ReplaceAll(IEnumerable<Solution.Domain.Rentals.Rental> rentals)
+    {
+        _rentals.Clear();
+        _rentals.AddRange(rentals);
+    }
 }

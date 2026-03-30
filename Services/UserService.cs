@@ -27,4 +27,10 @@ public class UserService
     {
         return _users.FirstOrDefault(u => u.Id == userId);
     }
+
+    public void ReplaceAll(IEnumerable<Solution.Domain.Users.User> users)
+    {
+        _users.Clear();
+        _users.AddRange(users);
+    }
 }

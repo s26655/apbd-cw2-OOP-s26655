@@ -1,7 +1,9 @@
 ﻿using Solution.Common;
 using Solution.Domain.Equipment;
 using Solution.Domain.Users;
+using Solution.Persistence;
 using Solution.Services;
+using System.IO;
 
 namespace Solution;
 
@@ -24,6 +26,7 @@ public class Program
             equipmentService,
             userService,
             rentalService);
+        var jsonStorageService = new JsonStorageService();
 
         var student = new Student(
             idGenerator.GenerateUserId(),
@@ -62,25 +65,54 @@ public class Program
 
         equipmentService.MarkAsUnavailable(camera.Id, "Damaged lens");
 
-        Console.WriteLine("=== Rental operations ===");
-        Console.WriteLine(rentalService.RentEquipment(student.Id, laptop.Id, 7).Message);
-        Console.WriteLine(rentalService.RentEquipment(student.Id, projector.Id, 5).Message);
-        Console.WriteLine(rentalService.RentEquipment(student.Id, camera.Id, 3).Message);
+        rentalService.RentEquipment(student.Id, laptop.Id, 7);
+        rentalService.RentEquipment(student.Id, projector.Id, 5);
 
-        Console.WriteLine();
-        Console.WriteLine(reportService.GenerateAllEquipmentReport());
+        rentalService.ReturnEquipment(projector.Id, DateTime.Now.AddDays(5));
+        rentalService.ReturnEquipment(laptop.Id, DateTime.Now.AddDays(10));
 
-        Console.WriteLine(reportService.GenerateAvailableEquipmentReport());
-
-        Console.WriteLine(reportService.GenerateActiveRentalsForUserReport(student.Id));
-
-        Console.WriteLine("=== Return operations ===");
-        Console.WriteLine(rentalService.ReturnEquipment(projector.Id, DateTime.Now.AddDays(5)).Message);
-        Console.WriteLine(rentalService.ReturnEquipment(laptop.Id, DateTime.Now.AddDays(10)).Message);
-
-        Console.WriteLine();
-        Console.WriteLine(reportService.GenerateOverdueRentalsReport());
-
+        Console.WriteLine("=== Original summary ===");
         Console.WriteLine(reportService.GenerateSummaryReport());
+
+        var projectRoot = Directory.GetParent(AppContext.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
+        var filePath = Path.Combine(projectRoot, "Data", "appdata.json");
+
+        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+
+        jsonStorageService.SaveToFile(
+            filePath,
+            equipmentService.GetAllEquipment(),
+            userService.GetAllUsers(),
+            rentalService.GetAllRentals());
+
+        Console.WriteLine($"Data saved to {filePath}");
+
+        var loadedData = jsonStorageService.LoadFromFile(filePath);
+
+        var restoredEquipment = jsonStorageService.RestoreEquipment(loadedData);
+        var restoredUsers = jsonStorageService.RestoreUsers(loadedData);
+        var restoredRentals = jsonStorageService.RestoreRentals(loadedData);
+
+        var restoredEquipmentService = new EquipmentService();
+        var restoredUserService = new UserService();
+        var restoredRentalService = new RentalService(
+            restoredEquipmentService,
+            restoredUserService,
+            rentalRulesService,
+            penaltyPolicy,
+            idGenerator);
+
+        restoredEquipmentService.ReplaceAll(restoredEquipment);
+        restoredUserService.ReplaceAll(restoredUsers);
+        restoredRentalService.ReplaceAll(restoredRentals);
+
+        var restoredReportService = new ReportService(
+            restoredEquipmentService,
+            restoredUserService,
+            restoredRentalService);
+
+        Console.WriteLine();
+        Console.WriteLine("=== Restored summary ===");
+        Console.WriteLine(restoredReportService.GenerateSummaryReport());
     }
 }

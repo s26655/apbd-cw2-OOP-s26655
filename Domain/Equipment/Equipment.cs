@@ -36,6 +36,13 @@ public abstract class Equipment
         IsAvailable = isAvailable;
     }
 
+    public void RestoreAvailabilityState(bool isAvailable, bool isMarkedUnavailable, string unavailableReason)
+    {
+        IsAvailable = isAvailable;
+        IsMarkedUnavailable = isMarkedUnavailable;
+        UnavailableReason = unavailableReason;
+    }
+
     public override string ToString()
     {
         var status = IsAvailable ? "Available" : "Unavailable";

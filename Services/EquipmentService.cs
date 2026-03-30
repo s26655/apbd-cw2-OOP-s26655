@@ -48,4 +48,10 @@ public class EquipmentService
         equipment.MarkAsUnavailable(reason);
         return OperationResult.Success($"Equipment {equipmentId} was marked as unavailable.");
     }
+
+    public void ReplaceAll(IEnumerable<Solution.Domain.Equipment.Equipment> equipmentItems)
+    {
+        _equipment.Clear();
+        _equipment.AddRange(equipmentItems);
+    }
 }
