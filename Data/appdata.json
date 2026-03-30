@@ -4,7 +4,7 @@
       "EquipmentType": "Laptop",
       "Id": "EQ-001",
       "Name": "Dell Latitude 5440",
-      "IsAvailable": true,
+      "IsAvailable": false,
       "IsMarkedUnavailable": false,
       "UnavailableReason": "",
       "RamGb": 16,
@@ -62,18 +62,18 @@
       "Id": "RNT-001",
       "UserId": "USR-001",
       "EquipmentId": "EQ-001",
-      "RentalDate": "2026-03-30T20:47:36.329799+02:00",
-      "DueDate": "2026-04-06T20:47:36.337906+02:00",
-      "ReturnedAt": "2026-04-09T20:47:36.338619+02:00",
-      "Penalty": 30
+      "RentalDate": "2026-03-30T21:29:06.94804+02:00",
+      "DueDate": "2026-04-06T21:29:06.961608+02:00",
+      "ReturnedAt": null,
+      "Penalty": 0
     },
     {
       "Id": "RNT-002",
       "UserId": "USR-001",
       "EquipmentId": "EQ-002",
-      "RentalDate": "2026-03-30T20:47:36.33815+02:00",
-      "DueDate": "2026-04-04T20:47:36.338151+02:00",
-      "ReturnedAt": "2026-04-04T20:47:36.338152+02:00",
+      "RentalDate": "2026-03-30T21:29:29.377973+02:00",
+      "DueDate": "2026-04-04T21:29:29.377988+02:00",
+      "ReturnedAt": "2026-03-30T21:30:57.617562+02:00",
       "Penalty": 0
     }
   ]
